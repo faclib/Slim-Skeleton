@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="php-slim-skeleton" default="show" basedir=".">
+    <import file="${basedir}/config/build-import-config.xml" as="config" />
+
+    <target name="show" description="Show properties" depends="init" >
+        <propertyset id="properties-env">
+            <propertyref prefix="env.*"/>
+            <propertyref prefix="user.*"/>
+            <propertyref regex="os.*"/>
+            <propertyref regex="exec.*"/>
+        </propertyset>
+        <propertyset id="properties-starting">
+            <propertyref regex="^([^\.]*)"/>
+            <mapper type="regexp" from="^([^\.]*)" to="\1" />
+        </propertyset>
+
+
+        <echoproperties>
+            <propertyset refid="properties-starting"/>
+        </echoproperties>
+        <echoproperties>
+            <propertyset refid="properties-env"/>
+        </echoproperties>
+    </target>
+
+
+    <target name="clean">
+        <delete dir="${basedir}/vendor"/>
+        <delete file="${basedir}/composer.lock"/>
+        <delete file="${basedir}/composer.phar"/>
+    </target>
+
+
+    <target name="create-project">
+        <mkdir dir="${basedir}/logs" />
+        <mkdir dir="${basedir}/cache" />
+        <tempfile property="temp.file" suffix=".xml" destDir="cache"/>
+
+        <chgrp group="www-data" file="${basedir}/logs"  type="dir"  />
+        <chgrp group="www-data" file="${basedir}/cache" type="dir"  />
+    </target>
+
+    <!-- Генерация файлов автозагрузки классов -->
+    <target name="phpab">
+        <exec executable="${exec.phpab}">
+            <arg value="--output" />
+            <arg path="tests/src/__autoload.php" />
+            <arg path="tests/src" />
+        </exec>
+    </target>
+
+
+</project>
